@@ -21,8 +21,34 @@ void conv1 (LENET_T weights[5][5][1][6], LENET_T bias[6],
 					}
 				}
 				acc += bias[f];
+				//Acitvation function
 				output[r][c][f] = relu_activation(acc);
 			}
 		}
 	}
 }
+
+void maxPooling1(LENET_T input[28][28][6], LENET_T output[14][14][6]) {
+	//Internal vairables declaration
+	LENET_T max;
+	LENET_T temp;
+	//Iterates over the input tensor
+	Feature_map: for (int fm = 0; fm < 6; fm++) {
+		Rows: for (int r = 0; r < 28; r += 2) {
+			Cols: for (int c = 0; c < 28; c += 2) {
+				max = 0;
+				//Iterates over the filter to get the maximum value
+				Filter_row: for (int fr = 0; fr < 2; fr++) {
+					Filter_col: for (int fc = 0; fc < 2; fc++) {
+						temp = input[r + fr][c + fc][fm];
+						if(temp > max)
+							max = temp;
+					}
+				}
+				//Save the maximum value on the output tensor
+				output[r/2][c/2][fm] = max;
+			}
+		}
+	}
+}
+
