@@ -13,3 +13,8 @@ void padding (LENET_T in[28][28], LENET_T out[32][32]) {
 		}
 	}
 }
+
+
+void relu_activation(LENET_T input, LENET_T output){
+	output = input < 0 ? 0 : input;
+}
