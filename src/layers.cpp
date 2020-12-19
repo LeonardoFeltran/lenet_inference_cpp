@@ -20,8 +20,8 @@ void conv1 (LENET_T weights[5][5][1][6], LENET_T bias[6],
 						acc += weights[fr][fc][0][f] * input_temp[r + fr][c + fc];
 					}
 				}
-				acc += bias[f];
 				//Acitvation function
+				acc += bias[f];
 				output[r][c][f] = relu_activation(acc);
 			}
 		}
@@ -116,9 +116,8 @@ void conv3(LENET_T weights[5][5][16][120], LENET_T bias[120],
 				}
 			}
 		}
-		//Add the bias value
+		//Add bias and write output
 		acc += bias[f];
-		//Activation function and store in the output matrix
 		output[f] = relu_activation(acc);		
 	}
 }
@@ -132,7 +131,22 @@ void dense1(LENET_T weights[120][84], LENET_T bias[84],
 		Col: for (int c = 0; c < 120; c++) {
 			acc += input[c] * weights[c][r];
 		}
+		//Add bias and write output
 		acc += bias[r];
 		output[r] = relu_activation(acc);
+	}
+}
+
+void dense2(LENET_T weights[84][10], LENET_T bias[10],
+			LENET_T input[84], LENET_T output[10]) {
+	LENET_T acc;
+	//Dot product between the input array and weights matrix
+	Row: for (int r = 0; r < 10; r++) {
+		acc = 0;
+		Col: for (int c = 0; c < 84; c++) {
+			acc += input[c] * weights[c][r];
+		}
+		//Add bias and write output
+		output[r] = acc + bias[r];
 	}
 }
