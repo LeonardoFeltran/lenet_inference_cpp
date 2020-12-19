@@ -18,7 +18,6 @@ void conv1 (LENET_T weights[5][5][1][6], LENET_T bias[6],
 				Filter_row: for (int fr = 0; fr < 5; fr++) {
 					Filter_col: for (int fc = 0; fc < 5; fc++) {
 						acc += weights[fr][fc][0][f] * input_temp[r + fr][c + fc];
-						
 					}
 				}
 				acc += bias[f];
@@ -100,5 +99,40 @@ void maxPooling2(LENET_T input[10][10][16], LENET_T output[5][5][16]) {
 				output[r/2][c/2][fm] = max;
 			}
 		}
+	}
+}
+
+void conv3(LENET_T weights[5][5][16][120], LENET_T bias[120], 
+		   LENET_T input[5][5][16], LENET_T output[120]) {
+	//Iterate over the input
+	Filter: for (int f = 0; f < 120; f++) {
+		//Accumulator of matrix multiplication
+		LENET_T acc = 0;
+		//Multiply all filter weights with all patch values
+		Feature_map: for (int fm = 0; fm < 16; fm++) {
+			Kernel_row: for (int kr = 0; kr < 5; kr++) {
+				Kernel_col: for (int kc = 0; kc < 5; kc++) {
+					acc += weights[kr][kc][fm][f] * input[kr][kc][fm];
+				}
+			}
+		}
+		//Add the bias value
+		acc += bias[f];
+		//Activation function and store in the output matrix
+		output[f] = relu_activation(acc);		
+	}
+}
+
+void dense1(LENET_T weights[120][84], LENET_T bias[84],
+		    LENET_T input[120], LENET_T output[84]) {
+	LENET_T acc;
+	//Dot product between the input array and weights matrix
+	Row: for (int r = 0; r < 84; r++) {
+		acc = 0;
+		Col: for (int c = 0; c < 120; c++) {
+			acc += input[c] * weights[c][r];
+		}
+		acc += bias[r];
+		output[r] = relu_activation(acc);
 	}
 }
