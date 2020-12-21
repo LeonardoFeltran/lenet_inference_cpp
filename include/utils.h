@@ -22,20 +22,32 @@ void padding (LENET_T in[28][28], LENET_T out[32][32]);
 LENET_T relu_activation (LENET_T input);
 
 /**
- * Read weights from a stream and store them into a tensor
+ * Read weigths and biases of convolution layers
  *
- * @param[in] weights_stream:	Stream with all weights queued 
- * @param[out] weights_tensor: 	Tensor to store all weights
+ * @param[in] kernel_num: number of kernels on the convolutional layer
+ * @param[in] kernel_size: kernel size
+ * @param[in] feature_maps_input: number of channels of the input image
+ * @param[in] weights_stream: stream used to send the weights
+ * @param[in] bias_stream: stream used to send the weights
+ * @param[out] weights_buffer: buffer to store all weigths read
+ * @param[out] bias_buffer: buffer to store all biases read
 */
-void read_weights (LENET_T* weights_stream, LENET_T weights_tensor[5][5][1][6]);
+void read_params_conv (int kernel_num, int kernel_size, int feature_maps_input, LENET_T weights_stream[61470],
+					   LENET_T bias_stream[236], LENET_T* weights_buffer, LENET_T* bias_buffer);
 
 /**
- * Read all biases from a stream and store them into a tensor
+ * Read weights and biases of dense layers
  *
- * @param[in] bias_stream:	Stream with all biases queued 
- * @param[out] bias_tensor: Tensor to store all biases
+ * @param[in] input_size: number of elements on the input array
+ * @param[in] neurons_num: number of neurons in the layer
+ * @param[in] weights_stream: stream used to send the weights
+ * @param[in] bias_stream: stream used to send the weights
+ * @param[out] weights_buffer: buffer to store all weigths read
+ * @param[out] bias_buffer: buffer to store all biases read
 */
-void read_biases (LENET_T* weights_stream, LENET_T weights_tensor[6]);
+void read_params_dense (int input_size, int neurons_num, LENET_T weights_stream[61470], 
+						LENET_T bias_stream[236], LENET_T* weights_buffer, LENET_T* bias_buffer);
+
 
 
 #endif
