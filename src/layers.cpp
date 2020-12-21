@@ -1,7 +1,7 @@
 #include "../include/layers.h"
 
 
-void conv1 (LENET_T weights[5][5][1][6], LENET_T bias[6],
+void conv1 (LENET_T* weights, LENET_T* bias,
 			LENET_T input[28][28], LENET_T output[28][28][6]) {
 	//Temporary input for padded input
 	LENET_T input_temp[32][32];
@@ -17,7 +17,7 @@ void conv1 (LENET_T weights[5][5][1][6], LENET_T bias[6],
 				//Multiply the input patch and weights of filter f
 				Filter_row: for (int fr = 0; fr < 5; fr++) {
 					Filter_col: for (int fc = 0; fc < 5; fc++) {
-						acc += weights[fr][fc][0][f] * input_temp[r + fr][c + fc];
+						acc += weights[fr*30 + fc*6 + f] * input_temp[r + fr][c + fc];
 					}
 				}
 				//Acitvation function
@@ -52,7 +52,7 @@ void maxPooling1(LENET_T input[28][28][6], LENET_T output[14][14][6]) {
 	}
 }
 
-void conv2 (LENET_T weights[5][5][6][16], LENET_T bias[16],
+void conv2 (LENET_T* weights, LENET_T* bias,
 			LENET_T input[14][14][6], LENET_T output[10][10][16]) {
 
 	//Iterate over the input
@@ -66,7 +66,7 @@ void conv2 (LENET_T weights[5][5][6][16], LENET_T bias[16],
 				Feature_map: for (int fm = 0; fm < 6; fm++) {
 					Filter_row: for (int fr = 0; fr < 5; fr++) {
 						Filter_col: for (int fc = 0; fc < 5; fc++) {
-							acc += weights[fr][fc][fm][f] * input[r + fr][c + fc][fm];
+							acc += weights[fr*480 + fc*96 + fm*16 + f] * input[r + fr][c + fc][fm];
 						}
 					}
 				}
@@ -102,7 +102,7 @@ void maxPooling2(LENET_T input[10][10][16], LENET_T output[5][5][16]) {
 	}
 }
 
-void conv3(LENET_T weights[5][5][16][120], LENET_T bias[120], 
+void conv3(LENET_T* weights, LENET_T* bias, 
 		   LENET_T input[5][5][16], LENET_T output[120]) {
 	//Iterate over the input
 	Filter: for (int f = 0; f < 120; f++) {
@@ -112,7 +112,7 @@ void conv3(LENET_T weights[5][5][16][120], LENET_T bias[120],
 		Feature_map: for (int fm = 0; fm < 16; fm++) {
 			Kernel_row: for (int kr = 0; kr < 5; kr++) {
 				Kernel_col: for (int kc = 0; kc < 5; kc++) {
-					acc += weights[kr][kc][fm][f] * input[kr][kc][fm];
+					acc += weights[kr*9600 + kc*1920 + fm*120 + f] * input[kr][kc][fm];
 				}
 			}
 		}
