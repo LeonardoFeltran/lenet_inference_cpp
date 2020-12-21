@@ -122,14 +122,14 @@ void conv3(LENET_T* weights, LENET_T* bias,
 	}
 }
 
-void dense1(LENET_T weights[120][84], LENET_T bias[84],
+void dense1(LENET_T* weights, LENET_T* bias,
 		    LENET_T input[120], LENET_T output[84]) {
 	LENET_T acc;
 	//Dot product between the input array and weights matrix
 	Row: for (int r = 0; r < 84; r++) {
 		acc = 0;
 		Col: for (int c = 0; c < 120; c++) {
-			acc += input[c] * weights[c][r];
+			acc += input[c] * weights[c*84 + r];
 		}
 		//Add bias and write output
 		acc += bias[r];
@@ -137,14 +137,14 @@ void dense1(LENET_T weights[120][84], LENET_T bias[84],
 	}
 }
 
-void dense2(LENET_T weights[84][10], LENET_T bias[10],
+void dense2(LENET_T* weights, LENET_T* bias,
 			LENET_T input[84], LENET_T output[10]) {
 	LENET_T acc;
 	//Dot product between the input array and weights matrix
 	Row: for (int r = 0; r < 10; r++) {
 		acc = 0;
 		Col: for (int c = 0; c < 84; c++) {
-			acc += input[c] * weights[c][r];
+			acc += input[c] * weights[c*10 + r];
 		}
 		//Add bias and write output
 		output[r] = acc + bias[r];
