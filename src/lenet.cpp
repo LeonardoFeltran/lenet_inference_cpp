@@ -4,8 +4,6 @@
 
 
 void lenet(LENET_T weights[61470], LENET_T bias[236], LENET_T input[28][28], LENET_T output[10]){
-	#pragma HLS INLINE off
-	#pragma HLS PIPELINE II=1
 
 	//Arguments for the first convolutional layer
 	LENET_T conv1_weights[150];
