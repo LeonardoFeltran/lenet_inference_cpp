@@ -48,11 +48,11 @@ LENET_T* read_bias() {
 	size_t success_read;
 	//Open the bias file
 	FILE* file = fopen("bias.bin", "rb");
-	float* temp = (float*)malloc(236 * sizeof(float));
 	//Allocate memory for bias array
 	LENET_T* bias = (LENET_T*)malloc(236 * sizeof(LENET_T));
-	//Check if the bias array was succecfully acllocated and if the bias files is open
-	if (!file || !bias){
+	float* temp = (float*)malloc(236 * sizeof(float));
+	//Check if the bias array was successfully allocated and if the bias files is open
+	if (!file || !bias || !temp){
 		return NULL;
 	}
 	//Read all bias fom file
