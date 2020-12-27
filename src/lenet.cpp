@@ -12,7 +12,6 @@ void lenet(hls::stream<AXI_VALUE>& weights, hls::stream<AXI_VALUE>& bias,
 
 	#pragma HLS INTERFACE s_axilite port=return bundle=control
 
-	#pragma HLS DATAFLOW
 
 	//Arguments for the first convolutional layer
 	LENET_T conv1_weights[150];
