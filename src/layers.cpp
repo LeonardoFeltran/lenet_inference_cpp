@@ -29,7 +29,7 @@ void conv1 (LENET_T* weights, LENET_T* bias,
 }
 
 void maxPooling1(LENET_T input[28][28][6], LENET_T output[14][14][6]) {
-	//Internal vairables declaration
+	//Temporary variables
 	LENET_T max;
 	LENET_T temp;
 	//Iterates over the input tensor
@@ -54,7 +54,6 @@ void maxPooling1(LENET_T input[28][28][6], LENET_T output[14][14][6]) {
 
 void conv2 (LENET_T* weights, LENET_T* bias,
 			LENET_T input[14][14][6], LENET_T output[10][10][16]) {
-
 	//Iterate over the input
 	Row: for (int r = 0; r < 10; r++) {
 		Col: for (int c = 0; c < 10; c++) {
@@ -79,7 +78,7 @@ void conv2 (LENET_T* weights, LENET_T* bias,
 }
 
 void maxPooling2(LENET_T input[10][10][16], LENET_T output[5][5][16]) {
-	//Internal vairables declaration
+	//Temporary variables
 	LENET_T max;
 	LENET_T temp;
 	//Iterates over the input tensor
@@ -124,6 +123,7 @@ void conv3(LENET_T* weights, LENET_T* bias,
 
 void dense1(LENET_T* weights, LENET_T* bias,
 		    LENET_T input[120], LENET_T output[84]) {
+	//Temporary variables
 	LENET_T acc;
 	//Dot product between the input array and weights matrix
 	Row: for (int r = 0; r < 84; r++) {
@@ -139,6 +139,7 @@ void dense1(LENET_T* weights, LENET_T* bias,
 
 void dense2(LENET_T* weights, LENET_T* bias,
 			LENET_T input[84], LENET_T output[10]) {
+	//Temporary variables
 	LENET_T acc;
 	//Dot product between the input array and weights matrix
 	Row: for (int r = 0; r < 10; r++) {

@@ -21,31 +21,88 @@ LENET_T relu_activation(LENET_T input){
 	return input < 0 ? (LENET_T) 0 : input;
 }
 
-void read_params_conv (int kernel_num, int kernel_size, int feature_maps_input,
-					  LENET_T weights_stream[61470], LENET_T bias_stream[236],
-					   LENET_T* weights_buffer, LENET_T* bias_buffer){
-	//Calculate the number of weigths to read
+void read_params_conv (int kernel_num, int kernel_size, int feature_maps_input, hls::stream<AXI_VALUE>& weights_stream,
+					   hls::stream<AXI_VALUE>& bias_stream, LENET_T* weights_buffer, LENET_T* bias_buffer){
+	//Temporary variable
+	AXI_VALUE aValue;
+	//Calculate the number of weights to read
 	int num_weights = kernel_num * kernel_size * kernel_size * feature_maps_input;
 	//Reads all weights and store on internal buffers
 	Read_weights_conv: for (int i = 0; i < num_weights; i++){
-		weights_buffer[i] = weights_stream[i];
+		//Read the input
+		weights_stream.read(aValue);
+		//Convert the data
+		union {	unsigned int ival; float oval; } converter;
+		converter.ival = aValue.data;
+		weights_buffer[i] = converter.oval;
 	}
 	//Reads all biases and store on internal buffers
 	Read_bias_conv: for (int p = 0; p < kernel_num; p++){
-		bias_buffer[p] = bias_stream[p];
+		//Read the input
+		bias_stream.read(aValue);
+		union {	unsigned int ival; float oval; } converter;
+		converter.ival = aValue.data;
+		bias_buffer[p] = converter.oval;
 	}
 }
 
-void read_params_dense (int input_size, int neurons_num, LENET_T weights_stream[61470], LENET_T bias_stream[236],
-					   LENET_T* weights_buffer, LENET_T* bias_buffer){
+void read_params_dense (int input_size, int neurons_num, hls::stream<AXI_VALUE>& weights_stream,
+		                hls::stream<AXI_VALUE>& bias_stream, LENET_T* weights_buffer, LENET_T* bias_buffer){
+	//Temporary variable
+	AXI_VALUE aValue;
 	//Address to read and store the values
 	int num_weights = input_size * neurons_num;
 	//Reads all weights and store on internal buffers
 	Read_weights_dense: for (int i = 0; i < num_weights; i++){
-		weights_buffer[i] = weights_stream[i];
+		//Read the input
+		weights_stream.read(aValue);
+		//Convert the data
+		union {	unsigned int ival; float oval; } converter;
+		converter.ival = aValue.data;
+		weights_buffer[i] = converter.oval;
 	}
 	//Reads all biases and store on internal buffers
 	Read_bias_dense: for (int p = 0; p < neurons_num; p++){
-		bias_buffer[p] = bias_stream[p];
+		//Read the input
+		bias_stream.read(aValue);
+		//Convert the data
+		union {	unsigned int ival; float oval; } converter;
+		converter.ival = aValue.data;
+		bias_buffer[p] = converter.oval;
+	}
+}
+
+void read_input(hls::stream<AXI_VALUE>& image, LENET_T image_buffer[28][28]){
+	//Temporary variable
+	AXI_VALUE aValue;
+	for (int i = 0; i < 28; i++){
+		for (int j = 0; j < 28; j++){
+			//Read the input
+			image.read(aValue);
+			//Convert the data
+			union {	unsigned int ival; float oval; } converter;
+			converter.ival = aValue.data;
+			image_buffer[i][j] = converter.oval;
+		}
+	}
+}
+
+void write_output(LENET_T lenet_out[10], hls::stream<AXI_VALUE>& out_stream){
+	//Temporary variable
+	AXI_VALUE aValue;
+	for (int i = 0; i < 10; i++){
+		union {	unsigned int oval; float ival; } converter;
+		//Convert the output
+		converter.ival = lenet_out[i];
+		aValue.data = converter.oval;
+		//Write side channel signals
+		aValue.last = (i == 9) ? 1 : 0;
+		aValue.strb = -1;
+		aValue.keep = 15;
+		aValue.user = 0;
+		aValue.id = 0;
+		aValue.dest = 0;
+		//Write the data
+		out_stream.write(aValue);
 	}
 }
