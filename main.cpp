@@ -33,10 +33,15 @@ void read_weights(hls::stream<AXI_VALUE>& weights) {
 	if(success_read != 61470)
 		return;
 	for (int i = 0; i < 61470; i++){
+		/***** FOR LENET_T == float *****
 		//Conversion to get the bit representation
 		union {	unsigned int oval; float ival; } converter;
 		converter.ival = temp[i];
 		aValue.data = converter.oval;
+		*/
+
+		LENET_T temp_value = temp[i];
+		aValue.data = temp_value.range();
 		//Put the data in the stream
 		weights.write(aValue);
 	}
@@ -69,10 +74,14 @@ void read_bias(hls::stream<AXI_VALUE>& bias) {
 	if(success_read != 236)
 		return;
 	for (int i = 0; i < 236; i++){
+		/***** FOR LENET_T == float *****
 		//Conversion to get the bit representation
 		union {	unsigned int oval; float ival; } converter;
 		converter.ival = temp[i];
 		aValue.data = converter.oval;
+		*/
+		LENET_T temp_value = temp[i];
+		aValue.data = temp_value.range();
 		//Put the data in the stream
 		bias.write(aValue);
 	}
@@ -156,7 +165,6 @@ LENET_T*** ReadMNIST(int num_images_read) {
 }
 
 
-
 int main(){
 
 	//Variables definition;
@@ -181,9 +189,13 @@ int main(){
 	//Write the dataset sample into the input array
 	for (int i = 0; i < 28; i++){
 		for (int j = 0; j < 28; j++){
+			/***** FOR LENET_T == float *****
 			union {	unsigned int oval; float ival; } converter;
 			converter.ival = dataset[0][i][j];
 			aValue.data = converter.oval;
+			*/
+			LENET_T temp_value = dataset[0][i][j];
+			aValue.data = temp_value.range();
 			input.write(aValue);
 		}
 	}
@@ -193,10 +205,14 @@ int main(){
 	for (int i = 0; i < 10; i++){
 		//Read the output
 		output.read(aValue);
+		/*
 		//Converte the data read to float
 		union {	unsigned int ival; float oval; } converter;
 		converter.ival = aValue.data;
-		std::cout << converter.oval << std::endl;
+		*/
+		LENET_T temp_value;
+		temp_value.range() = aValue.data;
+		std::cout << temp_value.to_float() << std::endl;
 	}
 	return 0;
 }

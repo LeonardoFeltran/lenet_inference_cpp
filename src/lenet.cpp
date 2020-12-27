@@ -57,7 +57,7 @@ void lenet(hls::stream<AXI_VALUE>& weights, hls::stream<AXI_VALUE>& bias,
 	read_params_conv(120, 5, 16, weights, bias, conv3_weights, conv3_bias);
 	//Third convolutional layer with ReLU activation	
 	conv3(conv3_weights, conv3_bias, conv3_in, conv3_out);
-	
+
 	//Read parameters (weights and biases) for the first dense layer
 	read_params_dense(120, 84, weights, bias, dense1_weights, dense1_bias);
 	//First dense layer with ReLU activation	
