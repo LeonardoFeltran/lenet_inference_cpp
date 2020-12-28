@@ -2,8 +2,10 @@
 
 
 void padding (LENET_T in[28][28], LENET_T out[32][32]) {
+	#pragma HLS INLINE region
 	Row: for (int r = 0; r < 32; r++) {
 		Col: for (int c = 0; c < 32; c++) {
+		#pragma HLS PIPELINE
 			//Copy the input pixel if the position is out of the padding region
 			if(c > 1 and r > 1 and c < 30 and r < 30)
 				out[r][c] = in[r - 2][c - 2];

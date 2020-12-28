@@ -15,7 +15,7 @@
  * @param[out] output:		features maps extracted by the layer
  * 
 */
-void conv1(LENET_T* weights, LENET_T* bias, LENET_T input[28][28], LENET_T output[28][28][6]);
+void conv1(LENET_T weights[150], LENET_T* bias, LENET_T input[28][28], LENET_T output[28][28][6]);
 
 
 /**

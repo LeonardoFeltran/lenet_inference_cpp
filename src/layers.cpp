@@ -1,10 +1,13 @@
 #include "../include/layers.h"
 
 
-void conv1 (LENET_T* weights, LENET_T* bias,
+void conv1 (LENET_T weights[150], LENET_T* bias,
 			LENET_T input[28][28], LENET_T output[28][28][6]) {
+	#pragma HLS INLINE region
 	//Temporary input for padded input
 	LENET_T input_temp[32][32];
+	#pragma HLS ARRAY_PARTITION variable=input_temp cyclic factor=5 dim=2
+	#pragma HLS ARRAY_PARTITION variable=weights block factor=25 dim=1
 	//Add padding at the input
 	padding(input, input_temp);
 	//Filter position
@@ -12,6 +15,7 @@ void conv1 (LENET_T* weights, LENET_T* bias,
 		Col: for (int c = 0; c < 28; c++) {
 			//Select the filter
 			Filter: for (int f = 0; f < 6; f++) {
+			#pragma HLS PIPELINE
 				//Accumulator to store weights and input multiplication
 				LENET_T acc = 0;
 				//Multiply the input patch and weights of filter f
