@@ -5,7 +5,7 @@
 #include <hls_stream.h>
 #include <ap_fixed.h>
 
-typedef ap_fixed<32, 14> LENET_T;
+typedef ap_fixed<22, 7> LENET_T;
 typedef ap_axiu<32,4,5,5> AXI_VALUE;
 
 
