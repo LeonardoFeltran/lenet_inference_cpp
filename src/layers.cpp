@@ -137,7 +137,7 @@ void conv3(LENET_T weights[48000], LENET_T bias[120],
 	}
 }
 
-void dense1(LENET_T* weights, LENET_T* bias,
+void dense1(LENET_T weights[10080], LENET_T bias[84],
 		    LENET_T input[120], LENET_T output[84]) {
 	//Temporary variables
 	LENET_T acc;
@@ -145,6 +145,7 @@ void dense1(LENET_T* weights, LENET_T* bias,
 	Row: for (int r = 0; r < 84; r++) {
 		acc = 0;
 		Col: for (int c = 0; c < 120; c++) {
+		#pragma HLS PIPELINE
 			acc += input[c] * weights[c*84 + r];
 		}
 		//Add bias and write output
@@ -154,7 +155,7 @@ void dense1(LENET_T* weights, LENET_T* bias,
 }
 
 
-void dense2(LENET_T* weights, LENET_T* bias,
+void dense2(LENET_T weights[840], LENET_T bias[10],
 			LENET_T input[84], LENET_T output[10]) {
 	//Temporary variables
 	LENET_T acc;
@@ -162,6 +163,7 @@ void dense2(LENET_T* weights, LENET_T* bias,
 	Row: for (int r = 0; r < 10; r++) {
 		acc = 0;
 		Col: for (int c = 0; c < 84; c++) {
+		#pragma HLS PIPELINE
 			acc += input[c] * weights[c*10 + r];
 		}
 		//Add bias and write output

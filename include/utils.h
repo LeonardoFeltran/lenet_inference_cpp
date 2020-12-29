@@ -6,6 +6,7 @@
 #include <ap_fixed.h>
 
 typedef ap_fixed<22, 7> LENET_T;
+typedef ap_fixed<32, 10> AXI_COMMU;
 typedef ap_axiu<32,4,5,5> AXI_VALUE;
 
 

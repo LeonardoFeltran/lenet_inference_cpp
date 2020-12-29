@@ -26,6 +26,7 @@ LENET_T relu_activation(LENET_T input){
 
 void read_params_conv (int kernel_num, int kernel_size, int feature_maps_input, hls::stream<AXI_VALUE>& weights_stream,
 					   hls::stream<AXI_VALUE>& bias_stream, LENET_T* weights_buffer, LENET_T* bias_buffer){
+	AXI_COMMU temp;
 	//Temporary variable
 	AXI_VALUE aValue;
 	//Calculate the number of weights to read
@@ -40,7 +41,8 @@ void read_params_conv (int kernel_num, int kernel_size, int feature_maps_input, 
 		converter.ival = aValue.data;
 		weights_buffer[i] = converter.oval;
 		*/
-		weights_buffer[i].range() = aValue.data;
+		temp.range() = aValue.data;
+		weights_buffer[i] = temp;
 	}
 	//Reads all biases and store on internal buffers
 	Read_bias_conv: for (int p = 0; p < kernel_num; p++){
@@ -51,12 +53,14 @@ void read_params_conv (int kernel_num, int kernel_size, int feature_maps_input, 
 		converter.ival = aValue.data;
 		bias_buffer[p] = converter.oval;
 		*/
-		bias_buffer[p].range() = aValue.data;
+		temp.range() = aValue.data;
+		bias_buffer[p] = temp;
 	}
 }
 
 void read_params_dense (int input_size, int neurons_num, hls::stream<AXI_VALUE>& weights_stream,
 		                hls::stream<AXI_VALUE>& bias_stream, LENET_T* weights_buffer, LENET_T* bias_buffer){
+	AXI_COMMU temp;
 	//Temporary variable
 	AXI_VALUE aValue;
 	//Address to read and store the values
@@ -71,7 +75,8 @@ void read_params_dense (int input_size, int neurons_num, hls::stream<AXI_VALUE>&
 		converter.ival = aValue.data;
 		weights_buffer[i] = converter.oval;
 		*/
-		weights_buffer[i].range() = aValue.data;
+		temp.range() = aValue.data;
+		weights_buffer[i] = temp;
 	}
 	//Reads all biases and store on internal buffers
 	Read_bias_dense: for (int p = 0; p < neurons_num; p++){
@@ -83,13 +88,16 @@ void read_params_dense (int input_size, int neurons_num, hls::stream<AXI_VALUE>&
 		converter.ival = aValue.data;
 		bias_buffer[p] = converter.oval;
 		*/
-		bias_buffer[p].range() = aValue.data;
+		temp.range() = aValue.data;
+		bias_buffer[p] = temp;
 	}
 }
 
 void read_input(hls::stream<AXI_VALUE>& image, LENET_T image_buffer[28][28]){
 	//Temporary variable
 	AXI_VALUE aValue;
+
+	AXI_COMMU temp;
 	for (int i = 0; i < 28; i++){
 		for (int j = 0; j < 28; j++){
 			//Read the input
@@ -100,12 +108,14 @@ void read_input(hls::stream<AXI_VALUE>& image, LENET_T image_buffer[28][28]){
 			converter.ival = aValue.data;
 			image_buffer[i][j] = converter.oval;
 			*/
-			image_buffer[i][j].range() = aValue.data;
+			temp.range() = aValue.data;
+			image_buffer[i][j] = temp;
 		}
 	}
 }
 
 void write_output(LENET_T lenet_out[10], hls::stream<AXI_VALUE>& out_stream){
+	AXI_COMMU temp;
 	//Temporary variable
 	AXI_VALUE aValue;
 	for (int i = 0; i < 10; i++){
@@ -115,7 +125,8 @@ void write_output(LENET_T lenet_out[10], hls::stream<AXI_VALUE>& out_stream){
 		converter.ival = lenet_out[i];
 		aValue.data = converter.oval;
 		*/
-		aValue.data = lenet_out[i].range();
+		temp = lenet_out[i];
+		aValue.data = temp.range();
 		//Write side channel signals
 		aValue.last = (i == 9) ? 1 : 0;
 		aValue.strb = -1;

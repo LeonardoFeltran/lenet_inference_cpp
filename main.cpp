@@ -40,7 +40,7 @@ void read_weights(hls::stream<AXI_VALUE>& weights) {
 		aValue.data = converter.oval;
 		*/
 
-		LENET_T temp_value = temp[i];
+		AXI_COMMU temp_value = temp[i];
 		aValue.data = temp_value.range();
 		//Put the data in the stream
 		weights.write(aValue);
@@ -69,7 +69,7 @@ void read_bias(hls::stream<AXI_VALUE>& bias) {
 		return;
 	}
 	//Read all bias fom file
-	success_read = fread(temp, sizeof(LENET_T), 236, file);
+	success_read = fread(temp, sizeof(float), 236, file);
 	//Check if all weights were successfully read
 	if(success_read != 236)
 		return;
@@ -80,7 +80,7 @@ void read_bias(hls::stream<AXI_VALUE>& bias) {
 		converter.ival = temp[i];
 		aValue.data = converter.oval;
 		*/
-		LENET_T temp_value = temp[i];
+		AXI_COMMU temp_value = temp[i];
 		aValue.data = temp_value.range();
 		//Put the data in the stream
 		bias.write(aValue);
@@ -96,15 +96,15 @@ void read_bias(hls::stream<AXI_VALUE>& bias) {
  * @return: Allocated memory allocated
  *
 */
-LENET_T*** allocate_images(int number_of_images){
+float*** allocate_images(int number_of_images){
 	//Allocate an array to store the images
-	LENET_T*** tensor = (LENET_T***)malloc(60000 * sizeof(LENET_T**));
+	float*** tensor = (float***)malloc(60000 * sizeof(float**));
 	for (int i = 0; i < 60000; i++){
 		//Allocate memory for the image rows
-		tensor[i] = (LENET_T**)malloc(28 * sizeof(LENET_T*));
+		tensor[i] = (float**)malloc(28 * sizeof(float*));
 		for (int j = 0; j < 28; j++){
 			//Allocate memory for the image cols
-			tensor[i][j] = (LENET_T*)malloc(28 * sizeof(LENET_T));
+			tensor[i][j] = (float*)malloc(28 * sizeof(float));
 		}
 	}
 	return tensor;
@@ -128,10 +128,10 @@ int ReverseInt (int i)
  *
 */
 
-LENET_T*** ReadMNIST(int num_images_read) {
+float*** ReadMNIST(int num_images_read) {
 	std::ifstream file ("train-images-idx3-ubyte", std::ios::binary);
 	if (file.is_open()) {
-		LENET_T*** images = allocate_images(num_images_read);
+		float*** images = allocate_images(num_images_read);
 		int magic_number=0;
 		int number_of_images=0;
 		int n_rows=0;
@@ -166,16 +166,14 @@ LENET_T*** ReadMNIST(int num_images_read) {
 
 
 int main(){
-
+	AXI_VALUE aValue;
 	//Variables definition;
-	 LENET_T*** dataset;
-	 AXI_VALUE aValue;
-	 LENET_T temp;
-	 //Stream for data transfer
-	 hls::stream<AXI_VALUE> weights;
-	 hls::stream<AXI_VALUE> bias;
-	 hls::stream<AXI_VALUE> input;
-	 hls::stream<AXI_VALUE> output;
+	float*** dataset;
+	//Stream for data transfer
+	hls::stream<AXI_VALUE> weights;
+	hls::stream<AXI_VALUE> bias;
+	hls::stream<AXI_VALUE> input;
+	hls::stream<AXI_VALUE> output;
 	//Read LeNet parameters
 	read_weights(weights);
 	read_bias(bias);
@@ -194,7 +192,7 @@ int main(){
 			converter.ival = dataset[0][i][j];
 			aValue.data = converter.oval;
 			*/
-			LENET_T temp_value = dataset[0][i][j];
+			AXI_COMMU temp_value = dataset[0][i][j];
 			aValue.data = temp_value.range();
 			input.write(aValue);
 		}
@@ -210,7 +208,7 @@ int main(){
 		union {	unsigned int ival; float oval; } converter;
 		converter.ival = aValue.data;
 		*/
-		LENET_T temp_value;
+		AXI_COMMU temp_value;
 		temp_value.range() = aValue.data;
 		std::cout << temp_value.to_float() << std::endl;
 	}
