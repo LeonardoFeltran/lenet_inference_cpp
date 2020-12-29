@@ -153,6 +153,7 @@ void dense1(LENET_T* weights, LENET_T* bias,
 	}
 }
 
+
 void dense2(LENET_T* weights, LENET_T* bias,
 			LENET_T input[84], LENET_T output[10]) {
 	//Temporary variables

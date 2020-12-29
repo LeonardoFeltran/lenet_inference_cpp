@@ -6,6 +6,7 @@
 
 #include "../include/utils.h"
 
+
 /**
  * Convolute over the input image
  * 

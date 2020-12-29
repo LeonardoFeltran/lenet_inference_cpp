@@ -17,6 +17,7 @@ void padding (LENET_T in[28][28], LENET_T out[32][32]) {
 }
 
 
+
 LENET_T relu_activation(LENET_T input){
 	// Check if the input id negative
 	// If true, the output is zero else it receives the input

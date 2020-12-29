@@ -14,3 +14,4 @@ void lenet(hls::stream<AXI_VALUE>& weights, hls::stream<AXI_VALUE>& bias,
 		   hls::stream<AXI_VALUE>& image, hls::stream<AXI_VALUE>& out_stream);
 
 #endif
+
