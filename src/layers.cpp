@@ -142,9 +142,9 @@ void dense1(LENET_T weights[10080], LENET_T bias[84],
 	//Temporary variables
 	LENET_T acc;
 	//Dot product between the input array and weights matrix
-	Row: for (int r = 0; r < 84; r++) {
+	Row_d1: for (int r = 0; r < 84; r++) {
 		acc = 0;
-		Col: for (int c = 0; c < 120; c++) {
+		Col_d1: for (int c = 0; c < 120; c++) {
 		#pragma HLS PIPELINE
 			acc += input[c] * weights[c*84 + r];
 		}
@@ -160,9 +160,9 @@ void dense2(LENET_T weights[840], LENET_T bias[10],
 	//Temporary variables
 	LENET_T acc;
 	//Dot product between the input array and weights matrix
-	Row: for (int r = 0; r < 10; r++) {
+	Row_d2: for (int r = 0; r < 10; r++) {
 		acc = 0;
-		Col: for (int c = 0; c < 84; c++) {
+		Col_d2: for (int c = 0; c < 84; c++) {
 		#pragma HLS PIPELINE
 			acc += input[c] * weights[c*10 + r];
 		}
