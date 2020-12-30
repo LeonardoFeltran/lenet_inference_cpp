@@ -6,6 +6,7 @@
 
 #include "../include/utils.h"
 
+
 /**
  * Convolute over the input image
  * 
@@ -15,7 +16,7 @@
  * @param[out] output:		features maps extracted by the layer
  * 
 */
-void conv1(LENET_T* weights, LENET_T* bias, LENET_T input[28][28], LENET_T output[28][28][6]);
+void conv1(LENET_T weights[150], LENET_T bias[6], LENET_T input[28][28], LENET_T output[28][28][6]);
 
 
 /**
@@ -27,7 +28,7 @@ void conv1(LENET_T* weights, LENET_T* bias, LENET_T input[28][28], LENET_T outpu
  * @param[out] output:		features maps extracted by the layer
  *
 */
-void conv2(LENET_T* weights, LENET_T* bias, LENET_T input[14][14][6], LENET_T output[10][10][16]);
+void conv2(LENET_T weights[2400], LENET_T bias[16], LENET_T input[14][14][6], LENET_T output[10][10][16]);
 
 
 /**
@@ -39,7 +40,7 @@ void conv2(LENET_T* weights, LENET_T* bias, LENET_T input[14][14][6], LENET_T ou
  * @param[out] output:		features maps extracted by the layer
  *
 */
-void conv3(LENET_T* weights, LENET_T* bias, LENET_T input[5][5][16], LENET_T output[120]);
+void conv3(LENET_T weights[48000], LENET_T bias[120], LENET_T input[5][5][16], LENET_T output[120]);
 
 
 /**

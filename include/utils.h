@@ -1,7 +1,15 @@
 #ifndef UTILS_H_
 #define UTILS_H_
 
-typedef float LENET_T;
+#include <ap_axi_sdata.h>
+#include <hls_stream.h>
+#include <ap_fixed.h>
+
+typedef ap_fixed<22, 7> LENET_T;
+typedef ap_fixed<32, 10> AXI_COMMU;
+typedef ap_axiu<32,4,5,5> AXI_VALUE;
+
+
 
 /**
  * Add zero padding on the input
@@ -32,8 +40,8 @@ LENET_T relu_activation (LENET_T input);
  * @param[out] weights_buffer: buffer to store all weigths read
  * @param[out] bias_buffer: buffer to store all biases read
 */
-void read_params_conv (int kernel_num, int kernel_size, int feature_maps_input, LENET_T weights_stream[61470],
-					   LENET_T bias_stream[236], LENET_T* weights_buffer, LENET_T* bias_buffer);
+void read_params_conv (int kernel_num, int kernel_size, int feature_maps_input, hls::stream<AXI_VALUE>& params_stream,
+					   LENET_T* weights_buffer, LENET_T* bias_buffer);
 
 /**
  * Read weights and biases of dense layers
@@ -45,9 +53,24 @@ void read_params_conv (int kernel_num, int kernel_size, int feature_maps_input, 
  * @param[out] weights_buffer: buffer to store all weigths read
  * @param[out] bias_buffer: buffer to store all biases read
 */
-void read_params_dense (int input_size, int neurons_num, LENET_T weights_stream[61470], 
-						LENET_T bias_stream[236], LENET_T* weights_buffer, LENET_T* bias_buffer);
+void read_params_dense (int input_size, int neurons_num, hls::stream<AXI_VALUE>& params_stream,
+		                LENET_T* weights_buffer, LENET_T* bias_buffer);
 
+/**
+ * Read the input image and store into an intern buffer
+ *
+ * @param[in] image: stream with the input image
+ * @param[out] image_buffer: internal buffer to store the image
+*/
+void read_input(hls::stream<AXI_VALUE>& image, LENET_T image_buffer[28][28]);
+
+/**
+ * Write the output into a stream
+ *
+ * @param[in] lenet_out: LeNet output
+ * @param[out] out_stream: output stream
+*/
+void write_output(LENET_T lenet_out[10], hls::stream<AXI_VALUE>& out_stream);
 
 
 #endif

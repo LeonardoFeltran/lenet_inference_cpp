@@ -1,5 +1,7 @@
 #include <iostream>
 #include <fstream>
+#include <hls_stream.h>
+#include <typeinfo>
 
 #include "include/utils.h"
 #include "include/layers.h"
@@ -12,58 +14,38 @@
  * @return: array with all weights read
  *
 */
-LENET_T* read_weights() {
+void read_params(hls::stream<AXI_VALUE>& params) {
+	//AXI variable
+	AXI_VALUE aValue;
 	//Variable for checking
 	size_t success_read;
 	//Open the weights files
-	FILE* file = fopen("weights.bin", "rb");
+	FILE* file = fopen("params", "rb");
 	//Allocate memory for all weights
-	LENET_T* weights = (LENET_T*)malloc(61470 * sizeof(LENET_T));
-	float* temp = (float*)malloc(61470 * sizeof(float));
+	float* temp = (float*)malloc(61706 * sizeof(float));
 	//Check if the weights array is allocated and the weights files is open
-	if (!file || !weights || !temp){
-		return NULL;
+	if (!file || !temp){
+		return;
 	}
 	//Read the weights
-	success_read = fread(temp, sizeof(float), 61470, file);
-	if(success_read != 61470)
-		return NULL;
-	for (int i = 0; i < 61470; i++){
-		weights[i] = temp[i];
+	success_read = fread(temp, sizeof(float), 61706, file);
+	//Check if all weights were successfully read
+	if(success_read != 61706)
+		return;
+	for (int i = 0; i < 61706; i++){
+		/***** FOR LENET_T == float *****
+		//Conversion to get the bit representation
+		union {	unsigned int oval; float ival; } converter;
+		converter.ival = temp[i];
+		aValue.data = converter.oval;
+		*/
+
+		AXI_COMMU temp_value = temp[i];
+		aValue.data = temp_value.range();
+		//Put the data in the stream
+		params.write(aValue);
 	}
 	free(temp);
-	//Return the weights
-	return weights;
-}
-
-
-/**
- * Read biases from a binary file
- *
- * @return: array with all bias read
- *
-*/
-LENET_T* read_bias() {
-	//Variable for checking
-	size_t success_read;
-	//Open the bias file
-	FILE* file = fopen("bias.bin", "rb");
-	//Allocate memory for bias array
-	LENET_T* bias = (LENET_T*)malloc(236 * sizeof(LENET_T));
-	float* temp = (float*)malloc(236 * sizeof(float));
-	//Check if the bias array was successfully allocated and if the bias files is open
-	if (!file || !bias || !temp){
-		return NULL;
-	}
-	//Read all bias fom file
-	success_read = fread(temp, sizeof(LENET_T), 236, file);
-	if(success_read != 236)
-		return NULL;
-	for (int i = 0; i < 236; i++){
-		bias[i] = temp[i];
-	}
-	//Returne the bias array
-	return bias;
 }
 
 
@@ -74,15 +56,15 @@ LENET_T* read_bias() {
  * @return: Allocated memory allocated
  *
 */
-LENET_T*** allocate_images(int number_of_images){
+float*** allocate_images(int number_of_images){
 	//Allocate an array to store the images
-	LENET_T*** tensor = (LENET_T***)malloc(60000 * sizeof(LENET_T**));
+	float*** tensor = (float***)malloc(60000 * sizeof(float**));
 	for (int i = 0; i < 60000; i++){
 		//Allocate memory for the image rows
-		tensor[i] = (LENET_T**)malloc(28 * sizeof(LENET_T*));
+		tensor[i] = (float**)malloc(28 * sizeof(float*));
 		for (int j = 0; j < 28; j++){
 			//Allocate memory for the image cols
-			tensor[i][j] = (LENET_T*)malloc(28 * sizeof(LENET_T));
+			tensor[i][j] = (float*)malloc(28 * sizeof(float));
 		}
 	}
 	return tensor;
@@ -106,10 +88,10 @@ int ReverseInt (int i)
  *
 */
 
-LENET_T*** ReadMNIST(int num_images_read) {
+float*** ReadMNIST(int num_images_read) {
 	std::ifstream file ("train-images-idx3-ubyte", std::ios::binary);
 	if (file.is_open()) {
-		LENET_T*** images = allocate_images(num_images_read);
+		float*** images = allocate_images(num_images_read);
 		int magic_number=0;
 		int number_of_images=0;
 		int n_rows=0;
@@ -143,40 +125,50 @@ LENET_T*** ReadMNIST(int num_images_read) {
 }
 
 
-
 int main(){
-
+	AXI_VALUE aValue;
 	//Variables definition;
-	LENET_T* weights;
-	LENET_T* bias;
-	LENET_T*** dataset;
-	
-	LENET_T input[28][28];
-	LENET_T output[10];
-
-
+	float*** dataset;
+	//Stream for data transfer
+	hls::stream<AXI_VALUE> params;
+	hls::stream<AXI_VALUE> input;
+	hls::stream<AXI_VALUE> output;
 	//Read LeNet parameters
-	weights = read_weights();
-	bias =  read_bias();
+	read_params(params);
 	//Read dataset
 	dataset = ReadMNIST(60000);
 	//Check that the parameters have been read correctly
-	if (!weights || !bias || !dataset){
+	if (!dataset ){
 		printf("Problem in reading parameter files\n");
 		return 1;
 	}
 	//Write the dataset sample into the input array
 	for (int i = 0; i < 28; i++){
 		for (int j = 0; j < 28; j++){
-			input[i][j] = dataset[0][i][j];
+			/***** FOR LENET_T == float *****
+			union {	unsigned int oval; float ival; } converter;
+			converter.ival = dataset[0][i][j];
+			aValue.data = converter.oval;
+			*/
+			AXI_COMMU temp_value = dataset[0][i][j];
+			aValue.data = temp_value.range();
+			input.write(aValue);
 		}
 	}
 	//Execute the classification using LeNet
-	lenet(weights, bias, input, output);
+	lenet(params, input, output);
 	//Print the output
 	for (int i = 0; i < 10; i++){
-		std::cout << output[i] << std::endl;
+		//Read the output
+		output.read(aValue);
+		/*
+		//Converte the data read to float
+		union {	unsigned int ival; float oval; } converter;
+		converter.ival = aValue.data;
+		*/
+		AXI_COMMU temp_value;
+		temp_value.range() = aValue.data;
+		std::cout << temp_value.to_float() << std::endl;
 	}
-
 	return 0;
 }

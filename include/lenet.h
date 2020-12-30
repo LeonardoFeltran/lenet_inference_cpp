@@ -4,12 +4,14 @@
 /**
  * LeNet architecture used for inference
  *
- * @param[in] weights:		All pre-trained weights used by the architecture
- * @param[in] bias:			All pre-trained biases
- * @param[in] input:		Sample to be classified (2D matrix)
- * @param[out] output:		The output value for each class
+ * @param[in] weights:		Stream of weights
+ * @param[in] bias:			Stream of biases
+ * @param[in] image:		Stream with input image
+ * @param[out] out_stream:	Output stream
  *
 */
-void lenet(LENET_T weights[61470], LENET_T bias[236], LENET_T input[28][28], LENET_T output[10]);
+void lenet(hls::stream<AXI_VALUE>& params_stream, hls::stream<AXI_VALUE>& image,
+		   hls::stream<AXI_VALUE>& out_stream);
 
 #endif
+
