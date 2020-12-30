@@ -33,6 +33,7 @@ void read_params_conv (int kernel_num, int kernel_size, int feature_maps_input, 
 	int num_weights = kernel_num * kernel_size * kernel_size * feature_maps_input;
 	//Reads all weights and store on internal buffers
 	Read_weights_conv: for (int i = 0; i < num_weights; i++){
+	#pragma HLS PIPELINE
 		//Read the input
 		weights_stream.read(aValue);
 		/***** FOR LENET_T == float *****
@@ -46,6 +47,7 @@ void read_params_conv (int kernel_num, int kernel_size, int feature_maps_input, 
 	}
 	//Reads all biases and store on internal buffers
 	Read_bias_conv: for (int p = 0; p < kernel_num; p++){
+	#pragma HLS PIPELINE
 		//Read the input
 		bias_stream.read(aValue);
 		/***** FOR LENET_T == float *****
@@ -67,6 +69,7 @@ void read_params_dense (int input_size, int neurons_num, hls::stream<AXI_VALUE>&
 	int num_weights = input_size * neurons_num;
 	//Reads all weights and store on internal buffers
 	Read_weights_dense: for (int i = 0; i < num_weights; i++){
+	#pragma HLS PIPELINE
 		//Read the input
 		weights_stream.read(aValue);
 		/***** FOR LENET_T == float *****
@@ -80,6 +83,7 @@ void read_params_dense (int input_size, int neurons_num, hls::stream<AXI_VALUE>&
 	}
 	//Reads all biases and store on internal buffers
 	Read_bias_dense: for (int p = 0; p < neurons_num; p++){
+	#pragma HLS PIPELINE
 		//Read the input
 		bias_stream.read(aValue);
 		/***** FOR LENET_T == float *****
@@ -100,6 +104,7 @@ void read_input(hls::stream<AXI_VALUE>& image, LENET_T image_buffer[28][28]){
 	AXI_COMMU temp;
 	for (int i = 0; i < 28; i++){
 		for (int j = 0; j < 28; j++){
+		#pragma HLS PIPELINE
 			//Read the input
 			image.read(aValue);
 			/***** FOR LENET_T == float *****
@@ -119,6 +124,7 @@ void write_output(LENET_T lenet_out[10], hls::stream<AXI_VALUE>& out_stream){
 	//Temporary variable
 	AXI_VALUE aValue;
 	for (int i = 0; i < 10; i++){
+	#pragma HLS PIPELINE
 		/***** FOR LENET_T == float *****
 		//Convert the output
 		union {	unsigned int oval; float ival; } converter;
