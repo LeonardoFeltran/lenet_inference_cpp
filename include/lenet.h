@@ -10,8 +10,8 @@
  * @param[out] out_stream:	Output stream
  *
 */
-void lenet(hls::stream<AXI_VALUE>& weights, hls::stream<AXI_VALUE>& bias,
-		   hls::stream<AXI_VALUE>& image, hls::stream<AXI_VALUE>& out_stream);
+void lenet(hls::stream<AXI_VALUE>& params_stream, hls::stream<AXI_VALUE>& image,
+		   hls::stream<AXI_VALUE>& out_stream);
 
 #endif
 

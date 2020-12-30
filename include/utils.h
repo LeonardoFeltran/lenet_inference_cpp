@@ -40,8 +40,8 @@ LENET_T relu_activation (LENET_T input);
  * @param[out] weights_buffer: buffer to store all weigths read
  * @param[out] bias_buffer: buffer to store all biases read
 */
-void read_params_conv (int kernel_num, int kernel_size, int feature_maps_input, hls::stream<AXI_VALUE>& weights_stream,
-					   hls::stream<AXI_VALUE>& bias_stream, LENET_T* weights_buffer, LENET_T* bias_buffer);
+void read_params_conv (int kernel_num, int kernel_size, int feature_maps_input, hls::stream<AXI_VALUE>& params_stream,
+					   LENET_T* weights_buffer, LENET_T* bias_buffer);
 
 /**
  * Read weights and biases of dense layers
@@ -53,8 +53,8 @@ void read_params_conv (int kernel_num, int kernel_size, int feature_maps_input, 
  * @param[out] weights_buffer: buffer to store all weigths read
  * @param[out] bias_buffer: buffer to store all biases read
 */
-void read_params_dense (int input_size, int neurons_num, hls::stream<AXI_VALUE>& weights_stream,
-		                hls::stream<AXI_VALUE>& bias_stream, LENET_T* weights_buffer, LENET_T* bias_buffer);
+void read_params_dense (int input_size, int neurons_num, hls::stream<AXI_VALUE>& params_stream,
+		                LENET_T* weights_buffer, LENET_T* bias_buffer);
 
 /**
  * Read the input image and store into an intern buffer

@@ -2,11 +2,10 @@
 #include "../include/utils.h"
 
 
-void lenet(hls::stream<AXI_VALUE>& weights, hls::stream<AXI_VALUE>& bias,
-		   hls::stream<AXI_VALUE>& image, hls::stream<AXI_VALUE>& out_stream){
+void lenet(hls::stream<AXI_VALUE>& params_stream, hls::stream<AXI_VALUE>& image,
+		   hls::stream<AXI_VALUE>& out_stream){
 
-	#pragma HLS INTERFACE axis offset=slave port=weights bundle=INPUT_STREAM
-	#pragma HLS INTERFACE axis offset=slave port=bias bundle=INPUT_STREAM
+	#pragma HLS INTERFACE axis offset=slave port=params_stream bundle=INPUT_STREAM
 	#pragma HLS INTERFACE axis offset=slave port=image bundle=INPUT_STREAM
 	#pragma HLS INTERFACE axis offset=slave port=out_stream bundle=OUTPUT_STREAM
 
@@ -41,31 +40,31 @@ void lenet(hls::stream<AXI_VALUE>& weights, hls::stream<AXI_VALUE>& bias,
 	read_input(image, conv1_in);
 
 	//Read parameters (weights and biases) for the first convolutional layer
-	read_params_conv(6, 5, 1, weights, bias, conv1_weights, conv1_bias);
+	read_params_conv(6, 5, 1, params_stream, conv1_weights, conv1_bias);
 	//First convolutional layer with ReLU activation
 	conv1(conv1_weights, conv1_bias, conv1_in, conv1_out);
 	//Max pooling layer for dimension reduction and get more relevant features
 	maxPooling1(conv1_out, conv2_in);
 
 	//Read parameters (weights and biases) for the second convolutional layer
-	read_params_conv(16, 5, 6, weights, bias, conv2_weights, conv2_bias);
+	read_params_conv(16, 5, 6, params_stream, conv2_weights, conv2_bias);
 	//Second convolutional layer with ReLU activation
 	conv2(conv2_weights, conv2_bias, conv2_in, conv2_out);
 	//Max pooling layer for dimension reduction and get more relevant features
 	maxPooling2(conv2_out, conv3_in);
 
 	//Read parameters (weights and biases) for the third convolutional layer
-	read_params_conv(120, 5, 16, weights, bias, conv3_weights, conv3_bias);
+	read_params_conv(120, 5, 16, params_stream, conv3_weights, conv3_bias);
 	//Third convolutional layer with ReLU activation	
 	conv3(conv3_weights, conv3_bias, conv3_in, conv3_out);
 
 	//Read parameters (weights and biases) for the first dense layer
-	read_params_dense(120, 84, weights, bias, dense1_weights, dense1_bias);
+	read_params_dense(120, 84, params_stream, dense1_weights, dense1_bias);
 	//First dense layer with ReLU activation	
 	dense1(dense1_weights, dense1_bias, conv3_out, dense1_out);
 
 	//Read parameters (weights and biases) for the second dense layer
-	read_params_dense(84, 10, weights, bias, dense2_weights, dense2_bias);
+	read_params_dense(84, 10, params_stream, dense2_weights, dense2_bias);
 	//Second dense layer with linear activation	
 	dense2(dense2_weights, dense2_bias, dense1_out, dense2_out);
 

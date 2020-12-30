@@ -14,25 +14,25 @@
  * @return: array with all weights read
  *
 */
-void read_weights(hls::stream<AXI_VALUE>& weights) {
+void read_params(hls::stream<AXI_VALUE>& params) {
 	//AXI variable
 	AXI_VALUE aValue;
 	//Variable for checking
 	size_t success_read;
 	//Open the weights files
-	FILE* file = fopen("weights.bin", "rb");
+	FILE* file = fopen("params", "rb");
 	//Allocate memory for all weights
-	float* temp = (float*)malloc(61470 * sizeof(float));
+	float* temp = (float*)malloc(61706 * sizeof(float));
 	//Check if the weights array is allocated and the weights files is open
 	if (!file || !temp){
 		return;
 	}
 	//Read the weights
-	success_read = fread(temp, sizeof(float), 61470, file);
+	success_read = fread(temp, sizeof(float), 61706, file);
 	//Check if all weights were successfully read
-	if(success_read != 61470)
+	if(success_read != 61706)
 		return;
-	for (int i = 0; i < 61470; i++){
+	for (int i = 0; i < 61706; i++){
 		/***** FOR LENET_T == float *****
 		//Conversion to get the bit representation
 		union {	unsigned int oval; float ival; } converter;
@@ -43,47 +43,7 @@ void read_weights(hls::stream<AXI_VALUE>& weights) {
 		AXI_COMMU temp_value = temp[i];
 		aValue.data = temp_value.range();
 		//Put the data in the stream
-		weights.write(aValue);
-	}
-	free(temp);
-}
-
-
-/**
- * Read biases from a binary file
- *
- * @return: array with all bias read
- *
-*/
-void read_bias(hls::stream<AXI_VALUE>& bias) {
-	//AXI variable
-	AXI_VALUE aValue;
-	//Variable for checking
-	size_t success_read;
-	//Open the bias file
-	FILE* file = fopen("bias.bin", "rb");
-	//Allocate memory to store all bias read
-	float* temp = (float*)malloc(236 * sizeof(float));
-	//Check if the bias array was successfully allocated and if the bias files is open
-	if (!file || !temp){
-		return;
-	}
-	//Read all bias fom file
-	success_read = fread(temp, sizeof(float), 236, file);
-	//Check if all weights were successfully read
-	if(success_read != 236)
-		return;
-	for (int i = 0; i < 236; i++){
-		/***** FOR LENET_T == float *****
-		//Conversion to get the bit representation
-		union {	unsigned int oval; float ival; } converter;
-		converter.ival = temp[i];
-		aValue.data = converter.oval;
-		*/
-		AXI_COMMU temp_value = temp[i];
-		aValue.data = temp_value.range();
-		//Put the data in the stream
-		bias.write(aValue);
+		params.write(aValue);
 	}
 	free(temp);
 }
@@ -170,13 +130,11 @@ int main(){
 	//Variables definition;
 	float*** dataset;
 	//Stream for data transfer
-	hls::stream<AXI_VALUE> weights;
-	hls::stream<AXI_VALUE> bias;
+	hls::stream<AXI_VALUE> params;
 	hls::stream<AXI_VALUE> input;
 	hls::stream<AXI_VALUE> output;
 	//Read LeNet parameters
-	read_weights(weights);
-	read_bias(bias);
+	read_params(params);
 	//Read dataset
 	dataset = ReadMNIST(60000);
 	//Check that the parameters have been read correctly
@@ -198,7 +156,7 @@ int main(){
 		}
 	}
 	//Execute the classification using LeNet
-	lenet(weights, bias, input, output);
+	lenet(params, input, output);
 	//Print the output
 	for (int i = 0; i < 10; i++){
 		//Read the output
