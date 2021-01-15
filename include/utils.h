@@ -35,8 +35,7 @@ LENET_T relu_activation (LENET_T input);
  * @param[in] kernel_num: number of kernels on the convolutional layer
  * @param[in] kernel_size: kernel size
  * @param[in] feature_maps_input: number of channels of the input image
- * @param[in] weights_stream: stream used to send the weights
- * @param[in] bias_stream: stream used to send the weights
+ * @param[in] params_stream: stream used to send all parameters
  * @param[out] weights_buffer: buffer to store all weigths read
  * @param[out] bias_buffer: buffer to store all biases read
 */
@@ -48,8 +47,7 @@ void read_params_conv (int kernel_num, int kernel_size, int feature_maps_input, 
  *
  * @param[in] input_size: number of elements on the input array
  * @param[in] neurons_num: number of neurons in the layer
- * @param[in] weights_stream: stream used to send the weights
- * @param[in] bias_stream: stream used to send the weights
+ * @param[in] params_stream: stream used to send all parameters
  * @param[out] weights_buffer: buffer to store all weigths read
  * @param[out] bias_buffer: buffer to store all biases read
 */
